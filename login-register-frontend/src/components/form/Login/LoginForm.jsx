@@ -132,7 +132,7 @@ const LoginForm = () => {
         </div>
         <input type="submit" className="register" value={"Login"} />
         <p className="or">━ or ━</p>
-        <button  className="login" onClick={()=>navigate('/register')}>Register</button>
+        <button  className="login" onClick={()=>navigate('/')}>Register</button>
       </form>
     </div>
   );
