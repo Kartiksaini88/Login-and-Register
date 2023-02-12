@@ -1,0 +1,60 @@
+const express = require('express')
+const router = express.Router()
+const jwt = require('jsonwebtoken')
+const User = require('./usermodel')
+const secreteKey = 'secreteKey'
+
+router.get('',async(req,res)=>{
+    try {
+        const user = await User.find({}).lean().exec()
+        res.status(401).send(user) 
+    } catch (error) {
+      res.status(401).send({message:error})        
+    }
+})
+
+router.get('/:id',tokencheck,async(req,res)=>{
+    try {
+        jwt.verify(req.token,secreteKey,(err,user)=>{
+            if(err){
+                res.send({message:"Invalid Token"})
+            }else{
+                res.send(user)
+            }
+        })
+    } catch (error) {
+      res.status(401).send({message:error})        
+    }
+})
+
+router.delete('/:id',async(req,res)=>{
+    try {
+        const user = await User.findByIdAndDelete(req.params.id)
+        res.status(401).send(user) 
+    } catch (error) {
+      res.status(401).send({message:error})        
+    }
+})
+
+router.patch('/:id',async(req,res)=>{
+    try {
+        const user = await User.findByIdAndUpdate(req.params.id,req.body,{new:true})
+        res.status(401).send(user) 
+    } catch (error) {
+      res.status(401).send({message:error})        
+    }
+})
+
+function tokencheck(req,res,next){
+    const bearerHeader = req.headers['authorization']
+    if(typeof bearerHeader !== undefined){
+        const bearer = bearerHeader.split(" ")
+        const token = bearer[1]
+        req.token = token
+        next()
+    }else{
+        res.send({message:"Token is not valid"})
+    }
+}
+
+module.exports = router
